@@ -18,14 +18,16 @@ jobs:
 
       - name: MacOS Install Deps
         if: matrix.os == 'macos-latest'
-        run: brew install automake autoconf libtool unbound
+        run: |
+          brew install automake autoconf libtool unbound
+          echo "CONFIGURE_EXTRA_ARGS=--with-unbound=$(brew --prefix unbound)" >> $GITHUB_ENV
 
       - name: Ubuntu Install Deps
         if: matrix.os == 'ubuntu-latest'
         run: sudo apt-get update && sudo apt-get install -y libunbound-dev
 
       - name: Build
-        run: ./autogen.sh && ./configure --with-network=regtest && make
+        run: ./autogen.sh && ./configure --with-network=regtest $CONFIGURE_EXTRA_ARGS && make
 
       - name: Unit Tests
         run: ./test_hnsd
